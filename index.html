@@ -3715,7 +3715,7 @@ DATOS ASTRONÓMICOS HOY (calculados en tiempo real): ${sunCtx}. LUNA: ${moonCtx}
 Genera ajustes de cámara. SOLO JSON sin backticks ni texto extra:
 {"iso":"valor","velocidad":"vel","apertura":"ap","modo_enfoque":"AF especifico","balance_blancos":"BB con K","modo_medicion":"medicion","iso_why":"8 palabras max","vel_why":"8 palabras max","ap_why":"8 palabras max","explicacion_general":"3 frases mencionando datos astro reales de hoy","ajuste_astro":"1 frase sobre como sol/luna/galaxia actuales afectan la config","tip_sol":{"titulo":"titulo","texto":"tip usando horario solar real calculado"},"tip_proteccion":{"titulo":"titulo","texto":"tip de proteccion del equipo para este destino"},"advertencia":"advertencia critica especifica","equipo_critico":["i1","i2","i3","i4"],"dificultad_tecnica":"1-10"}`;
   try{
-    const res=await fetch('/.netlify/functions/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:900,messages:[{role:'user',content:prompt}]})});
+    const res=await fetch('/./api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:900,messages:[{role:'user',content:prompt}]})});
     const data=await res.json();
     const r=JSON.parse(data.content[0].text.trim().replace(/```json|```/g,'').trim());
     ldEl.remove();
