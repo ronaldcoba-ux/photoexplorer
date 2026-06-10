@@ -3091,14 +3091,14 @@ async function fetchWX(lat,lon,name){
 // ═══════════════════════════════════════
 function loadAll(lat,lon,name,emoji){
   CL={lat,lon,name,emoji};
-  const st=renderSun(lat,lon);
-  renderMoon(lat,lon);
-  renderGC(lat,lon,st);
-  fetchWX(lat,lon,name);
-  document.getElementById('alb-dest').textContent=name;
-  document.getElementById('astro-dest-btn').textContent=`${emoji} ${name} →`;
-  document.getElementById('dm-em').textContent=emoji;
-  document.getElementById('dm-nm').textContent=name;
+  try{var st=renderSun(lat,lon);}catch(e){var st=null;}
+  try{renderMoon(lat,lon);}catch(e){}
+  try{renderGC(lat,lon,st);}catch(e){}
+  try{fetchWX(lat,lon,name);}catch(e){}
+  var el1=document.getElementById('alb-dest');if(el1)el1.textContent=name;
+  var el2=document.getElementById('astro-dest-btn');if(el2)el2.textContent=emoji+' '+name+' →';
+  var el3=document.getElementById('dm-em');if(el3)el3.textContent=emoji;
+  var el4=document.getElementById('dm-nm');if(el4)el4.textContent=name;
 }
 
 // ═══════════════════════════════════════
@@ -6225,7 +6225,6 @@ function filterRegs(cat,el){
 buildDestList();
 
 // ═══ LOCATION BOOT ═══
-// 1. Restore last known location (GPS or destination) from previous session
 var savedLoc=null;
 try{savedLoc=JSON.parse(localStorage.getItem('pe_last_location'));}catch(_){}
 var hasSavedLocation=!!(savedLoc&&savedLoc.lat&&savedLoc.lon&&savedLoc.name);
@@ -6233,6 +6232,10 @@ if(hasSavedLocation){
   CL={lat:savedLoc.lat,lon:savedLoc.lon,name:savedLoc.name,emoji:savedLoc.emoji||'📍'};
 }
 loadAll(CL.lat,CL.lon,CL.name,CL.emoji);
+// If we have a saved location, force-sync ALL labels right away
+if(hasSavedLocation){
+  setTimeout(function(){setAppLocation(CL.lat,CL.lon,CL.name,CL.emoji);},50);
+}
 renderSpotList();
 checkOnlineStatus();
 registerSW();
@@ -6275,7 +6278,13 @@ function showGPSBanner(){
       }
     });
   });
-  document.getElementById('gps-banner-close').addEventListener('click',function(){banner.remove();});
+  document.getElementById('gps-banner-close').addEventListener('click',function(){
+    banner.remove();
+    // User declined GPS — show the honest fallback (Tambopata) instead of leaving "Detectando…"
+    if(CL.lat===-12.83&&CL.lon===-69.27){
+      setAppLocation(-12.83,-69.27,'Tambopata, Perú','🦜');
+    }
+  });
 }
 
 // Silent GPS attempt (succeeds if permission already granted in a previous session)
