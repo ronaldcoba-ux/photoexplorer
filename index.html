@@ -3104,15 +3104,52 @@ function loadAll(lat,lon,name,emoji){
 // ═══════════════════════════════════════
 // GEOLOCATION
 // ═══════════════════════════════════════
+// ═══ CENTRAL LOCATION SETTER — single source of truth ═══
+function setAppLocation(lat,lon,name,emoji){
+  CL={lat:lat,lon:lon,name:name,emoji:emoji||'📍'};
+  try{localStorage.setItem('pe_last_location',JSON.stringify({lat:lat,lon:lon,name:name,emoji:emoji||'📍'}));}catch(_){}
+  loadAll(lat,lon,name,emoji||'📍');
+  // Force-update every location label in the app
+  var L=[
+    ['wx-dest-nm',name],
+    ['astro-dest-btn',(emoji||'📍')+' '+name+' →'],
+    ['alb-dest',name],
+    ['dm-nm',name],
+    ['luz-dest-tag','📍 '+name+' · '+lat.toFixed(2)+'°, '+lon.toFixed(2)+'°'],
+  ];
+  L.forEach(function(p){var el=document.getElementById(p[0]);if(el)el.textContent=p[1];});
+  ['wx-dest-em','dm-em'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=emoji||'📍';});
+  // Remove GPS banner if present
+  var b=document.getElementById('gps-welcome-banner');
+  if(b) b.remove();
+}
+
+// ═══ GPS — must be called from a user gesture on iOS PWA ═══
+function requestGPS(onFail){
+  if(!navigator.geolocation){if(onFail)onFail('no-geo');return;}
+  navigator.geolocation.getCurrentPosition(
+    async function(pos){
+      var lat=pos.coords.latitude,lon=pos.coords.longitude;
+      var name=lat.toFixed(2)+'°, '+lon.toFixed(2)+'°';
+      try{
+        var r=await fetch('https://nominatim.openstreetmap.org/reverse?lat='+lat+'&lon='+lon+'&format=json&accept-language=es');
+        var d=await r.json();var a=d.address||{};
+        name=a.city||a.town||a.village||a.county||a.state||name;
+      }catch(_){}
+      setAppLocation(lat,lon,name,'📍');
+      loadWeatherPro();
+    },
+    function(err){if(onFail)onFail(err&&err.code===1?'denied':'error');},
+    {timeout:10000,maximumAge:120000,enableHighAccuracy:false}
+  );
+}
+
 function useMyLoc(){
-  const btn=document.getElementById('astro-dest-btn');btn.textContent='⏳ Detectando…';
-  if(!navigator.geolocation){btn.textContent='⚠ No disponible';return;}
-  navigator.geolocation.getCurrentPosition(async pos=>{
-    const lat=pos.coords.latitude,lon=pos.coords.longitude;
-    let name=`${lat.toFixed(2)}°,${lon.toFixed(2)}°`;
-    try{const r=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=es`);const d=await r.json();const a=d.address;name=a.city||a.town||a.village||a.county||name;}catch(_){}
-    loadAll(lat,lon,name,'📍');
-  },_=>{btn.textContent='⚠ Permiso denegado';});
+  var btn=document.getElementById('astro-dest-btn');
+  if(btn) btn.textContent='⏳ Detectando…';
+  requestGPS(function(reason){
+    if(btn) btn.textContent=reason==='denied'?'⚠ Permiso denegado — Ajustes › Safari › Localización':'⚠ GPS no disponible';
+  });
 }
 
 // ═══════════════════════════════════════
@@ -3770,7 +3807,7 @@ function openDet(id){
 
   document.getElementById('det-overlay').classList.add('open');
   document.getElementById('det-overlay').scrollTop=0;
-  loadAll(d.lat,d.lon,d.nm,d.e);
+  setAppLocation(d.lat,d.lon,d.nm,d.e);
 }
 
 function closeDet(){document.getElementById('det-overlay').classList.remove('open');}
@@ -4118,24 +4155,11 @@ let WX_CACHE=null;
 let wxDaySelected=0;
 
 function detectWXLoc(){
-  if(!navigator.geolocation){
-    loadWeatherPro();// fall back to current CL
-    return;
-  }
-  navigator.geolocation.getCurrentPosition(async pos=>{
-    const lat=pos.coords.latitude,lon=pos.coords.longitude;
-    let name=`${lat.toFixed(2)}°, ${lon.toFixed(2)}°`;
-    try{
-      const r=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=es`);
-      const d=await r.json();const a=d.address;
-      name=a.city||a.town||a.village||name;
-    }catch(_){}
-    // Use loadAll so CL, WX_DEST, astro, and all modules stay in sync
-    loadAll(lat,lon,name,'📍');
-    // Then load weather (loadAll already set WX_DEST via override)
-    loadWeatherPro();
-  },()=>{
-    // Permission denied — load with current CL
+  var wnm=document.getElementById('wx-dest-nm');
+  if(wnm) wnm.textContent='⏳ Detectando…';
+  requestGPS(function(reason){
+    if(wnm) wnm.textContent=CL.name;
+    if(reason==='denied') alert('Permiso de ubicación denegado.\n\nActívalo en: Ajustes del iPhone → Privacidad → Localización → Safari → "Al usar la app"');
     loadWeatherPro();
   });
 }
@@ -6199,11 +6223,14 @@ function filterRegs(cat,el){
 }
 
 buildDestList();
-// Restore last known location before GPS loads
+
+// ═══ LOCATION BOOT ═══
+// 1. Restore last known location (GPS or destination) from previous session
 var savedLoc=null;
 try{savedLoc=JSON.parse(localStorage.getItem('pe_last_location'));}catch(_){}
-if(savedLoc&&savedLoc.lat&&savedLoc.lon){
-  CL={lat:savedLoc.lat,lon:savedLoc.lon,name:savedLoc.name||'Mi ubicación',emoji:'📍'};
+var hasSavedLocation=!!(savedLoc&&savedLoc.lat&&savedLoc.lon&&savedLoc.name);
+if(hasSavedLocation){
+  CL={lat:savedLoc.lat,lon:savedLoc.lon,name:savedLoc.name,emoji:savedLoc.emoji||'📍'};
 }
 loadAll(CL.lat,CL.lon,CL.name,CL.emoji);
 renderSpotList();
@@ -6219,68 +6246,64 @@ setTimeout(function(){
   try{renderRegulations();}catch(e){}
 },800);
 
-// GPS — always request on boot, save result for next session
-function detectAndSaveLocation(){
-  if(!navigator.geolocation)return;
+// 2. GPS strategy for iOS PWA:
+//    - Try silent GPS (works if permission was already granted before)
+//    - If no saved location, ALSO show the banner immediately — iOS requires
+//      a user tap for the permission prompt to appear at all
+function showGPSBanner(){
+  if(document.getElementById('gps-welcome-banner'))return;
+  var banner=document.createElement('div');
+  banner.id='gps-welcome-banner';
+  banner.style.cssText='position:absolute;bottom:84px;left:14px;right:14px;background:rgba(13,13,28,.97);border:1px solid rgba(56,200,184,.4);border-radius:14px;padding:13px 14px;z-index:300;display:flex;align-items:center;gap:11px;box-shadow:0 8px 32px rgba(0,0,0,.6)';
+  banner.innerHTML='<span style="font-size:1.3rem;flex-shrink:0">📍</span>'
+    +'<div style="flex:1;min-width:0"><div style="font-size:.76rem;font-weight:500;color:#e0e0f0;margin-bottom:2px">¿Usar tu ubicación real?</div>'
+    +'<div style="font-size:.62rem;color:#38c8b8">Clima y astronomía para tu posición exacta</div></div>'
+    +'<div id="gps-banner-btn" style="background:rgba(56,200,184,.2);border:1px solid rgba(56,200,184,.5);border-radius:9px;padding:9px 13px;cursor:pointer;font-family:\'JetBrains Mono\',monospace;font-size:.6rem;color:#38c8b8;white-space:nowrap;flex-shrink:0">Activar GPS</div>'
+    +'<div id="gps-banner-close" style="color:rgba(255,255,255,.35);cursor:pointer;font-size:.85rem;flex-shrink:0;padding:4px">✕</div>';
+  var screen=document.querySelector('.screen')||document.body;
+  screen.appendChild(banner);
+  document.getElementById('gps-banner-btn').addEventListener('click',function(){
+    this.textContent='⏳…';
+    requestGPS(function(reason){
+      var btn=document.getElementById('gps-banner-btn');
+      if(btn) btn.textContent=reason==='denied'?'Denegado':'Reintentar';
+      if(reason==='denied'){
+        var banner2=document.getElementById('gps-welcome-banner');
+        if(banner2){
+          banner2.querySelector('div').nextElementSibling.innerHTML='<div style="font-size:.72rem;color:#e09828;line-height:1.4">Activa la ubicación en:<br>Ajustes → Privacidad → Localización → Safari</div>';
+        }
+      }
+    });
+  });
+  document.getElementById('gps-banner-close').addEventListener('click',function(){banner.remove();});
+}
+
+// Silent GPS attempt (succeeds if permission already granted in a previous session)
+if(navigator.geolocation){
   navigator.geolocation.getCurrentPosition(
     async function(pos){
       var lat=pos.coords.latitude,lon=pos.coords.longitude;
-      var name='Mi ubicación';
+      var name=lat.toFixed(2)+'°, '+lon.toFixed(2)+'°';
       try{
         var r=await fetch('https://nominatim.openstreetmap.org/reverse?lat='+lat+'&lon='+lon+'&format=json&accept-language=es');
-        var d=await r.json();var a=d.address;
-        name=a.city||a.town||a.village||a.county||name;
+        var d=await r.json();var a=d.address||{};
+        name=a.city||a.town||a.village||a.county||a.state||name;
       }catch(_){}
-      // Save for next boot
-      try{localStorage.setItem('pe_last_location',JSON.stringify({lat:lat,lon:lon,name:name}));}catch(_){}
-      loadAll(lat,lon,name,'📍');
-      // Force-update all location labels immediately
-      var labelsToUpdate=[
-        {id:'wx-dest-nm',val:name},
-        {id:'astro-dest-btn',val:'📍 '+name+' →'},
-        {id:'alb-dest',val:name},
-        {id:'dm-nm',val:name},
-        {id:'luz-dest-tag',val:'📍 '+name+' · '+lat.toFixed(2)+'°, '+lon.toFixed(2)+'°'},
-      ];
-      labelsToUpdate.forEach(function(l){
-        var el=document.getElementById(l.id);
-        if(el) el.textContent=l.val;
-      });
-      var emojis=['wx-dest-em','dm-em'];
-      emojis.forEach(function(id){var el=document.getElementById(id);if(el)el.textContent='📍';});
-      // Hide GPS banner if visible
-      var banner=document.getElementById('gps-welcome-banner');
-      if(banner) banner.style.display='none';
+      setAppLocation(lat,lon,name,'📍');
     },
-    function(err){
-      // Show banner asking user to tap for location
-      showGPSBanner();
+    function(){
+      // Silent attempt failed → show banner so the user can grant via tap (iOS requirement)
+      if(!hasSavedLocation) showGPSBanner();
     },
-    {timeout:6000,maximumAge:120000,enableHighAccuracy:false}
+    {timeout:7000,maximumAge:300000,enableHighAccuracy:false}
   );
+  // iOS sometimes never fires the error callback — failsafe timer
+  setTimeout(function(){
+    if(!hasSavedLocation&&CL.lat===-12.83&&CL.lon===-69.27) showGPSBanner();
+  },8000);
+} else if(!hasSavedLocation){
+  showGPSBanner();
 }
-
-function showGPSBanner(){
-  // Only show if location is still default Tambopata
-  if(CL.lat!==-12.83) return;
-  var existing=document.getElementById('gps-welcome-banner');
-  if(existing) return;
-  var banner=document.createElement('div');
-  banner.id='gps-welcome-banner';
-  banner.style.cssText='position:absolute;bottom:80px;left:16px;right:16px;background:rgba(56,200,184,.15);border:1px solid rgba(56,200,184,.35);border-radius:14px;padding:13px 15px;z-index:200;display:flex;align-items:center;gap:12px;backdrop-filter:blur(8px)';
-  banner.innerHTML='<span style="font-size:1.3rem;flex-shrink:0">📍</span>'
-    +'<div style="flex:1"><div style="font-size:.78rem;font-weight:500;color:#e0e0f0;margin-bottom:2px">¿Usar tu ubicación real?</div>'
-    +'<div style="font-size:.66rem;color:rgba(56,200,184,.8)">El clima y la astronomía se calcularán para Cajamarca</div></div>'
-    +'<div onclick="detectAndSaveLocation()" style="background:rgba(56,200,184,.25);border:1px solid rgba(56,200,184,.5);border-radius:8px;padding:8px 12px;cursor:pointer;font-family:\'JetBrains Mono\',monospace;font-size:.58rem;color:var(--teal);white-space:nowrap">Activar GPS</div>'
-    +'<div onclick="this.parentElement.remove()" style="color:rgba(255,255,255,.3);cursor:pointer;font-size:.8rem;flex-shrink:0">✕</div>';
-  var phone=document.querySelector('.screen');
-  if(phone) phone.appendChild(banner);
-  // Auto-dismiss after 8s
-  setTimeout(function(){if(banner.parentElement)banner.remove();},8000);
-}
-
-// Try GPS on boot
-detectAndSaveLocation();
 
 setTimeout(function(){
   ['spot-lat-input','spot-lon-input'].forEach(function(id){
