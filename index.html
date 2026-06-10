@@ -2977,11 +2977,13 @@ function renderSun(lat,lon){
   if(st.aRise&&st.aSet)prog=Math.max(0,Math.min(1,(now-st.aRise)/(st.aSet-st.aRise)));
   document.getElementById('sun-mk').style.left=(prog*100)+'%';
   // update ALB and hero
-  document.getElementById('alb-sr').textContent=fmt(st.sunrise)||'—';
-  document.getElementById('alb-gd').textContent=`${fmt(st.gEveStart)}–${fmt(st.sunset)}`;
-  document.getElementById('alb-bl').textContent=`${fmt(st.sunset)}–${fmt(st.bSet)}`;
-  document.getElementById('alb-as').textContent=fmt(st.aSet)||'—';
-  document.getElementById('h-sunrise').textContent=fmt(st.sunrise)||'—';
+  (function(){var e;
+  e=document.getElementById('alb-sr');if(e)e.textContent=fmt(st.sunrise)||'—';
+  e=document.getElementById('alb-gd');if(e)e.textContent=fmt(st.gEveStart)+'–'+fmt(st.sunset);
+  e=document.getElementById('alb-bl');if(e)e.textContent=fmt(st.sunset)+'–'+fmt(st.bSet);
+  e=document.getElementById('alb-as');if(e)e.textContent=fmt(st.aSet)||'—';
+  e=document.getElementById('h-sunrise');if(e)e.textContent=fmt(st.sunrise)||'—';
+  }());
   // card chips — all Peru sunrise spans share default loc sunrise (Tambopata)
   document.querySelectorAll('.cs1,.cs2,.cs3,.cs-mp,.cs-cc,.cs-mn,.cs-tt,.cs-hc,.cs-ch,.cs-hs,.cs-nz,.cs-iq').forEach(el=>el.textContent=fmt(st.sunrise)||'—');
   return st;
@@ -3008,9 +3010,11 @@ function renderMoon(lat,lon){
     <div class="mt-cell"><div class="mt-ic">⭐</div><div class="mt-lbl">Calidad Astro</div><div class="mt-val" style="color:${m.ill<20?'var(--green)':m.ill<50?'var(--amber)':'var(--rose)'}">${m.ill<20?'Excelente':m.ill<50?'Buena':m.ill<80?'Moderada':'Mala'}</div><div class="mt-sub">${m.ill}% ilum.</div></div>
     <div class="mt-cell"><div class="mt-ic">🌌</div><div class="mt-lbl">Vía Láctea</div><div class="mt-val" style="color:${m.ill<25?'var(--green)':'var(--rose)'}">${m.ill<25?'Visible':'Reducida'}</div><div class="mt-sub">Interferencia lunar</div></div>`;
   // ALB + hero
-  document.getElementById('alb-mp').textContent=`${m.ph.ic} ${m.ph.n} ${m.ill}%`;
-  document.getElementById('alb-ms').textContent=fmt(m.moonset)||'—';
-  document.getElementById('h-moon').textContent=`${m.ph.ic} ${m.ill}%`;
+  (function(){var e;
+  e=document.getElementById('alb-mp');if(e)e.textContent=m.ph.ic+' '+m.ph.n+' '+m.ill+'%';
+  e=document.getElementById('alb-ms');if(e)e.textContent=fmt(m.moonset)||'—';
+  e=document.getElementById('h-moon');if(e)e.textContent=m.ph.ic+' '+m.ill+'%';
+  }());
   document.querySelectorAll('.cm1,.cm3,.cm4,.cm-mp,.cm-mn,.cm-hc,.cm-ch,.cm-iq').forEach(el=>el.textContent=`${m.ph.ic} ${m.ill}%`);
   return m;
 }
@@ -3079,8 +3083,10 @@ async function fetchWX(lat,lon,name){
         <div class="pi-t">Impacto fotográfico</div>
         <div class="pi-chips">${chips.map(c=>`<span class="pi-chip ${c.cl}">${c.t}</span>`).join('')}</div>
       </div>`;
-    document.getElementById('alb-wx').textContent=`${wmo.ic} ${c.temperature_2m}°C`;
-    document.getElementById('h-wx').textContent=`${c.temperature_2m}°C`;
+    (function(){var e;
+    e=document.getElementById('alb-wx');if(e)e.textContent=wmo.ic+' '+c.temperature_2m+'°C';
+    e=document.getElementById('h-wx');if(e)e.textContent=c.temperature_2m+'°C';
+    }());
   }catch(e){
     document.getElementById('wx-pane').innerHTML=`<div style="color:var(--rose);font-size:.7rem;padding:10px">⚠ No se pudo cargar el clima: ${e.message}</div>`;
   }
@@ -3099,6 +3105,22 @@ function loadAll(lat,lon,name,emoji){
   var el2=document.getElementById('astro-dest-btn');if(el2)el2.textContent=emoji+' '+name+' →';
   var el3=document.getElementById('dm-em');if(el3)el3.textContent=emoji;
   var el4=document.getElementById('dm-nm');if(el4)el4.textContent=name;
+  // ── Weather module sync (merged from former override) ──
+  WX_DEST={lat:lat,lon:lon,name:name,emoji:emoji};
+  var wnm=document.getElementById('wx-dest-nm');if(wnm)wnm.textContent=name;
+  var wem=document.getElementById('wx-dest-em');if(wem)wem.textContent=emoji;
+  // Topo labels
+  var topoName=document.getElementById('topo-dest-name');if(topoName)topoName.textContent=name;
+  var topoLoc=document.getElementById('topo-loc-chip');if(topoLoc)topoLoc.textContent='📍 '+name.split(',')[0];
+  // Refresh Luz tab if visible
+  var luzView=document.getElementById('v-lens');
+  if(luzView&&luzView.classList.contains('active')){try{requestAnimationFrame(renderLuzAll);}catch(e){}}
+  // Refresh topo, alerts, regulations if their containers exist
+  requestAnimationFrame(function(){
+    try{if(document.getElementById('topo-canvas')) renderTopoMap();}catch(e){}
+    try{if(document.getElementById('alerts-container')) renderAlerts();}catch(e){}
+    try{if(document.getElementById('reg-container')) renderRegulations();}catch(e){}
+  });
 }
 
 // ═══════════════════════════════════════
@@ -3274,6 +3296,13 @@ const DETS=[
    temp:'25–35°C',hum:'80–90%',rating:9.2,best:'Jun–Oct',diff:'Intermedio',tags:['🐬 Delfines','🦜 Aves','🌿 Selva'],
    tips:[{ic:'🐬',t:'Los delfines rosados (bufeos) suben al atardecer en los confluentes de ríos. Tele 400mm desde barca — movimiento impredecible, usa ráfaga.'},{ic:'🌃',t:'Las caminatas nocturnas en Iquitos revelan caimanes oculares en el río con linterna. Sus ojos reflejan naranja en la oscuridad.'},{ic:'🦜',t:'El lago Quistococha y la Reserva de Pacaya-Samiria tienen la mayor concentración de aves de la Amazonia norte peruana.'},{ic:'🚤',t:'El bote rápido Iquitos–Santa Rosa tarda 10h por el Amazonas. El amanecer sobre el río desde cubierta es extraordinario.'}],
    gear:['Teleobjetivo 400–500mm','Macro 100mm','Linterna UV + frontal','Dry bag total','Sílica gel ×30','Repelente DEET 40%']},
+
+  {id:25,cont:'sudamerica',pais:'Perú',paiFlag:'🇵🇪',paiCls:'cfb-peru',
+   e:'⛪',bg:'bg-colca',loc:'Perú · Cajamarca · 2750m',nm:'Cajamarca, Sierra Norte',lat:-7.16,lon:-78.51,
+   desc:'La ciudad del rescate de Atahualpa: arquitectura colonial, los Baños del Inca humeantes al amanecer, las Ventanillas de Otuzco talladas en roca volcánica y la campiña más fotogénica de la sierra norte con cielos limpios de junio a septiembre.',
+   temp:'6–22°C',hum:'40–70%',rating:8.7,best:'May–Sep',diff:'Todos',tags:['⛪ Colonial','🏔️ Campiña','🌄 Amanecer'],
+   tips:[{ic:'🌫️',t:'Los Baños del Inca al amanecer (6–7 AM): el vapor de las aguas termales con contraluz dorado crea atmósferas únicas. Llega antes que abran al público.'},{ic:'⛪',t:'El Conjunto Monumental de Belén y la Catedral tienen la mejor luz de tarde (3–5 PM). El mirador de Santa Apolonia da la vista clásica de la ciudad con cerros de fondo.'},{ic:'🌄',t:'Las Ventanillas de Otuzco con luz rasante de mañana revelan la textura de los nichos tallados. La Granja Porcón combina bosques de pinos con cultura evangélica única.'},{ic:'🌌',t:'Cumbemayo (3500m, a 1h): el bosque de piedras y el acueducto preinca bajo cielo Bortle 3 — astrofotografía con formaciones rocosas de primer plano.'}],
+   gear:['Gran angular 16–35mm','Lente 50mm f/1.8 (calles)','Trípode (amanecer Baños)','Filtro polarizador','Abrigo (madrugadas 5°C)','Tele 70–200mm (campiña)']},
 
   // ── BRASIL ──
   {id:10,cont:'sudamerica',pais:'Brasil',paiFlag:'🇧🇷',paiCls:'cfb-brasil',
@@ -3934,8 +3963,8 @@ Genera ajustes de cámara. SOLO JSON sin backticks ni texto extra:
         </div>
         ${r.advertencia?`<div class="warn-strip"><span>⚠️</span><span>${r.advertencia}</span></div>`:''}
         <div class="t22">
-          <div class="tc"><div class="tc-h">☀️ ${r.tip_sol?r.tip_sol.titulo:'Luz Solar'}</div><div class="tc-b">${r.tip_sol?.texto||''}</div></div>
-          <div class="tc"><div class="tc-h">🛡 ${r.tip_proteccion?r.tip_proteccion.titulo:'Equipo'}</div><div class="tc-b">${r.tip_proteccion?.texto||''}</div></div>
+          <div class="tc"><div class="tc-h">☀️ ${r.tip_sol?r.tip_sol.titulo:'Luz Solar'}</div><div class="tc-b">${r.tip_sol&&r.tip_sol.texto?r.tip_sol.texto:''}</div></div>
+          <div class="tc"><div class="tc-h">🛡 ${r.tip_proteccion?r.tip_proteccion.titulo:'Equipo'}</div><div class="tc-b">${r.tip_proteccion&&r.tip_proteccion.texto?r.tip_proteccion.texto:''}</div></div>
         </div>
         <div class="gear-s">
           <div class="gear-s-t">Equipo crítico</div>
@@ -4431,30 +4460,6 @@ function renderSpecialConditions(data){
 }
 
 // Sync WX_DEST when loadAll is called
-const _origLoadAll=loadAll;
-function loadAll(lat,lon,name,emoji){
-  _origLoadAll(lat,lon,name,emoji);
-  WX_DEST={lat,lon,name,emoji};
-  const wnm=document.getElementById('wx-dest-nm');
-  const wem=document.getElementById('wx-dest-em');
-  if(wnm) wnm.textContent=name;
-  if(wem) wem.textContent=emoji;
-  // Update topo label if visible
-  const topoName=document.getElementById('topo-dest-name');
-  if(topoName) topoName.textContent=name;
-  const topoLoc=document.getElementById('topo-loc-chip');
-  if(topoLoc) topoLoc.textContent=`📍 ${name.split(',')[0]}`;
-  // Refresh Luz tab if visible
-  const luzView=document.getElementById('v-lens');
-  if(luzView&&luzView.classList.contains('active')) requestAnimationFrame(renderLuzAll);
-  // Refresh topo, alerts, regulations only if those containers exist and are visible
-  requestAnimationFrame(()=>{
-    try{if(document.getElementById('topo-canvas')) renderTopoMap();}catch(e){}
-    try{if(document.getElementById('alerts-container')) renderAlerts();}catch(e){}
-    try{if(document.getElementById('reg-container')) renderRegulations();}catch(e){}
-  });
-}
-
 // ═══════════════════════════════════════
 // ── EPHEMERIS CALENDAR ──
 // ═══════════════════════════════════════
