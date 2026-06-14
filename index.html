@@ -28,10 +28,10 @@
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{
-  background:#050508;
+  background:#08080f;
   font-family:'Figtree',sans-serif;font-weight:300;
-  min-height:100vh;display:flex;flex-direction:column;
-  align-items:center;padding:40px 20px 60px;overflow-x:hidden;
+  min-height:100vh;min-height:100dvh;
+  margin:0;padding:0;overflow:hidden;
 }
 body::before{
   content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
@@ -196,26 +196,12 @@ body::before{
 .fpills{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin-top:18px}
 .fpill{padding:4px 13px;border-radius:99px;border:1px solid rgba(255,255,255,.07);font-size:.62rem;color:#505080;background:rgba(255,255,255,.02)}
 
-/* ══ PHONE SHELL ══ */
-.phone-wrap{position:relative;z-index:1;margin:0;padding:0}
+/* ══ APP SHELL — FULLSCREEN ══ */
+.phone-wrap{position:relative;z-index:1;margin:0;padding:0;width:100%}
 .phone{
   width:100%;min-height:100vh;min-height:100dvh;background:#08080f;
   overflow:hidden;position:relative;display:flex;flex-direction:column;
 }
-.dynamic-island{display:none}
-.status-bar{display:none}
-.dynamic-island{
-  position:absolute;top:12px;left:50%;transform:translateX(-50%);
-  width:118px;height:33px;background:#000;border-radius:20px;z-index:200;
-  display:flex;align-items:center;justify-content:center;gap:8px;
-}
-.di-cam{width:8px;height:8px;border-radius:50%;background:#111;border:1px solid #222}
-.di-sens{width:10px;height:10px;border-radius:50%;background:rgba(56,200,184,.15);border:1px solid rgba(56,200,184,.25)}
-
-/* STATUS */
-.status-bar{height:52px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 8px;flex-shrink:0;position:relative;z-index:50}
-.s-time{font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:500;color:#e8e8f8}
-.s-right{display:flex;gap:5px;align-items:center;font-size:.66rem;color:#e8e8f8;font-family:'JetBrains Mono',monospace}
 
 /* SCREEN */
 .screen{flex:1;overflow:hidden;position:relative;padding-top:env(safe-area-inset-top,20px)}
@@ -1090,14 +1076,7 @@ svg.ring-svg{width:56px;height:56px}
 <!-- PHONE SHELL -->
 <div class="phone-wrap">
 <div class="phone">
-  <div class="dynamic-island"><div class="di-cam"></div><div class="di-sens"></div></div>
   <div class="offline-pill" id="offline-pill">📵 Sin conexión</div>
-
-  <!-- STATUS BAR -->
-  <div class="status-bar">
-    <span class="s-time" id="s-clock">9:41</span>
-    <div class="s-right"><span>▲▼</span><span>●●●●</span><span>100%</span></div>
-  </div>
 
   <!-- SCREEN -->
   <div class="screen">
@@ -2298,7 +2277,7 @@ svg.ring-svg{width:56px;height:56px}
 // ═══════════════════════════════════════
 // CLOCK
 // ═══════════════════════════════════════
-function tick(){const n=new Date();document.getElementById('s-clock').textContent=n.toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit',hour12:false});}
+function tick(){var el=document.getElementById('s-clock');if(el)el.textContent=new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit',hour12:false});}
 tick();setInterval(tick,30000);
 
 // ═══════════════════════════════════════
