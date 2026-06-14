@@ -40,12 +40,53 @@ body::before{
     radial-gradient(ellipse at 85% 70%,rgba(56,200,184,.05) 0%,transparent 50%),
     radial-gradient(ellipse at 50% 50%,rgba(192,112,232,.03) 0%,transparent 60%);
 }
-/* ══ STANDALONE PWA — EXTRA ADJUSTMENTS ══ */
-@media (display-mode: standalone), (display-mode: fullscreen){
-  body{background:#08080f;overflow:hidden}
+/* ══ STANDALONE PWA — FULLSCREEN ON REAL IPHONE ══ */
+@media (display-mode: standalone){
+  /* Hide the demo landing page elements */
+  .page-header,.page-footer,.fpills,.page-eyebrow,.page-title,.page-sub{display:none !important}
+
+  /* Remove phone frame — fill entire viewport */
+  .phone-wrap{padding:0;margin:0;display:flex;min-height:100vh;min-height:100dvh}
+  .phone{
+    width:100% !important;height:100vh !important;height:100dvh !important;
+    border-radius:0 !important;border:none !important;
+    box-shadow:none !important;max-width:none !important;
+  }
+
+  /* Hide fake UI — the real iPhone provides these */
+  .dynamic-island{display:none !important}
+  .status-bar{display:none !important}
+
+  /* Screen fills viewport between safe areas */
+  .screen{
+    padding-top:env(safe-area-inset-top,48px) !important;
+    flex:1 !important;
+  }
+
+  /* Tab bar respects home indicator */
+  .tab-bar{
+    padding-bottom:env(safe-area-inset-bottom,20px) !important;
+    height:auto !important;
+    min-height:64px;
+  }
+
+  /* Views get bottom padding for tab bar */
+  .view{padding-bottom:100px !important}
+
+  /* Splash fills real viewport */
+  .splash{position:fixed;inset:0;border-radius:0}
+
+  /* Offline pill adjusts for real status bar area */
   .offline-pill{top:env(safe-area-inset-top,48px) !important}
+
+  /* AR fills entire screen */
   .ar-wrap{position:fixed !important;inset:0 !important;z-index:100}
   .ar-hud-top{top:env(safe-area-inset-top,48px) !important}
+}
+
+/* Also handle iOS Safari "Add to Home Screen" detection */
+@media (display-mode: standalone), (display-mode: fullscreen){
+  body{background:#08080f;overflow:hidden}
 }
 
 /* Page header */
@@ -1073,7 +1114,8 @@ svg.ring-svg{width:56px;height:56px}
   </div>
 </div>
 
-<!-- PHONE SHELL -->
+<!-- PAGE HEADER -->
+<!-- APP SHELL -->
 <div class="phone-wrap">
 <div class="phone">
   <div class="offline-pill" id="offline-pill">📵 Sin conexión</div>
@@ -1317,7 +1359,6 @@ svg.ring-svg{width:56px;height:56px}
           <div class="dl-seg" style="flex:10;background:#0a0a18">Noche</div>
         </div>
         <div class="sun-evts" id="sun-evts"></div>
-        <!-- Eclipses solares -->
         <div style="margin-top:16px">
           <div class="mono-lbl" style="margin-bottom:8px">🌑 Próximos eclipses solares</div>
           <div id="solar-eclipses"></div>
@@ -1336,7 +1377,6 @@ svg.ring-svg{width:56px;height:56px}
           </div>
         </div>
         <div class="moon-grid" id="moon-grid"></div>
-        <!-- Eclipses lunares -->
         <div style="margin-top:16px">
           <div class="mono-lbl" style="margin-bottom:8px">🌒 Próximos eclipses lunares</div>
           <div id="lunar-eclipses"></div>
@@ -1481,6 +1521,21 @@ svg.ring-svg{width:56px;height:56px}
             <div style="font-size:.62rem;color:#505070;margin-top:2px">Cámara, lente, flash, filtro, drone…</div>
           </div>
           <span style="color:var(--gold);font-size:1rem;font-weight:300">+</span>
+        </div>
+
+        <!-- Quick-add templates -->
+        <div style="margin-bottom:14px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.13em;color:#383858;text-transform:uppercase;margin-bottom:7px;padding-left:2px">⚡ Agregar rápido por tipo</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <div onclick="quickAddGear('camara')" style="padding:8px 12px;background:#0d0d1c;border:1px solid rgba(255,255,255,.08);border-radius:9px;cursor:pointer;font-size:.66rem;color:#c0c0e0;display:flex;align-items:center;gap:5px;transition:all .15s">📷 Cámara</div>
+            <div onclick="quickAddGear('lente')" style="padding:8px 12px;background:#0d0d1c;border:1px solid rgba(255,255,255,.08);border-radius:9px;cursor:pointer;font-size:.66rem;color:#c0c0e0;display:flex;align-items:center;gap:5px;transition:all .15s">🔭 Lente</div>
+            <div onclick="quickAddGear('flash')" style="padding:8px 12px;background:#0d0d1c;border:1px solid rgba(255,255,255,.08);border-radius:9px;cursor:pointer;font-size:.66rem;color:#c0c0e0;display:flex;align-items:center;gap:5px;transition:all .15s">⚡ Flash</div>
+            <div onclick="quickAddGear('filtro')" style="padding:8px 12px;background:#0d0d1c;border:1px solid rgba(255,255,255,.08);border-radius:9px;cursor:pointer;font-size:.66rem;color:#c0c0e0;display:flex;align-items:center;gap:5px;transition:all .15s">🔮 Filtro</div>
+            <div onclick="quickAddGear('tripode')" style="padding:8px 12px;background:#0d0d1c;border:1px solid rgba(255,255,255,.08);border-radius:9px;cursor:pointer;font-size:.66rem;color:#c0c0e0;display:flex;align-items:center;gap:5px;transition:all .15s">🎯 Trípode</div>
+            <div onclick="quickAddGear('bateria')" style="padding:8px 12px;background:#0d0d1c;border:1px solid rgba(255,255,255,.08);border-radius:9px;cursor:pointer;font-size:.66rem;color:#c0c0e0;display:flex;align-items:center;gap:5px;transition:all .15s">🔋 Batería</div>
+            <div onclick="quickAddGear('drone')" style="padding:8px 12px;background:#0d0d1c;border:1px solid rgba(255,255,255,.08);border-radius:9px;cursor:pointer;font-size:.66rem;color:#c0c0e0;display:flex;align-items:center;gap:5px;transition:all .15s">🚁 Drone</div>
+            <div onclick="quickAddGear('bolsa')" style="padding:8px 12px;background:#0d0d1c;border:1px solid rgba(255,255,255,.08);border-radius:9px;cursor:pointer;font-size:.66rem;color:#c0c0e0;display:flex;align-items:center;gap:5px;transition:all .15s">🎒 Bolsa</div>
+          </div>
         </div>
 
         <!-- Category filter -->
@@ -3017,6 +3072,63 @@ function showAT(id){
   if(id==='lp'){try{renderLightPollution();}catch(e){console.warn('lp:',e);}}
   if(id==='weather'){try{loadWeatherPro();}catch(e){console.warn('wx:',e);}}
   if(id==='sun'||id==='moon'){try{renderEclipses();}catch(e){}}
+}
+
+// ═══════════════════════════════════════
+// ECLIPSES 2025–2030
+// ═══════════════════════════════════════
+var SOLAR_ECLIPSES=[
+  {date:'2025-03-29',type:'Parcial',region:'Europa, N. África, Rusia',tip:'Visible parcialmente desde España y norte de África'},
+  {date:'2025-09-21',type:'Parcial',region:'Pacífico Sur, Antártida, N. Zelanda',tip:'Solo visible desde el hemisferio sur'},
+  {date:'2026-02-17',type:'Anular',region:'Antártida, S. Argentina, S. Chile',tip:'El anillo de fuego cruza la Patagonia — oportunidad única'},
+  {date:'2026-08-12',type:'Total',region:'Ártico, España, Islandia, Groenlandia',tip:'Eclipse total visible desde España e Islandia'},
+  {date:'2027-02-06',type:'Anular',region:'S. América, Antártida, África',tip:'Visible como parcial desde Perú y Chile'},
+  {date:'2027-08-02',type:'Total',region:'N. África, Medio Oriente, España',tip:'Totalidad de 6 min 23 s en Egipto y Arabia'},
+  {date:'2028-01-26',type:'Anular',region:'Pacífico, Perú, Ecuador, Colombia',tip:'ANULARIDAD CRUZA PERÚ — anillo de fuego visible desde Lima y la sierra'},
+  {date:'2028-07-22',type:'Total',region:'Australia, N. Zelanda, Pacífico Sur',tip:'Totalidad cruza Australia — combina con el Outback'},
+  {date:'2029-06-12',type:'Parcial',region:'Ártico, Escandinavia',tip:'Solo visible desde altas latitudes'},
+  {date:'2029-07-11',type:'Parcial',region:'S. América (sur)',tip:'Visible parcialmente desde Argentina y Chile'},
+  {date:'2029-12-05',type:'Parcial',region:'Antártida, S. América austral',tip:'Visible desde el extremo sur de Chile y Argentina'},
+  {date:'2030-06-01',type:'Anular',region:'N. África, Europa del Este, Asia',tip:'Anularidad cruza el Mediterráneo oriental'},
+  {date:'2030-11-25',type:'Total',region:'S. África, Océano Índico, Australia',tip:'Totalidad en Sudáfrica — combina con safari'},
+];
+var LUNAR_ECLIPSES=[
+  {date:'2025-09-07',type:'Total',region:'Europa, Asia, África, Australia',dur:'3h 29m',tip:'Visible completo desde Europa y África'},
+  {date:'2026-03-03',type:'Total',region:'América, Europa, E. Asia',dur:'3h 27m',tip:'Excelente desde Perú — luna de sangre visible'},
+  {date:'2026-08-28',type:'Parcial',region:'América, Europa, África',dur:'1h 52m',tip:'Parcial grande (91%) — visible desde todo Perú'},
+  {date:'2028-01-12',type:'Parcial',region:'América, Europa, África',dur:'0h 56m',tip:'Eclipse parcial visible desde Sudamérica'},
+  {date:'2028-07-06',type:'Parcial',region:'América, Pacífico, E. Asia',dur:'1h 32m',tip:'Visible desde Perú al amanecer'},
+  {date:'2028-12-31',type:'Total',region:'Europa, Asia, África, Australia',dur:'3h 18m',tip:'Luna de sangre de Año Nuevo'},
+  {date:'2029-06-26',type:'Total',region:'América, Europa, África',dur:'3h 40m',tip:'Excelente desde Perú — buena totalidad'},
+  {date:'2029-12-20',type:'Total',region:'América, Europa, E. Asia',dur:'3h 34m',tip:'Eclipse total navideño visible desde toda América'},
+  {date:'2030-06-15',type:'Parcial',region:'América, Europa, África',dur:'2h 24m',tip:'Eclipse parcial profundo visible desde Perú'},
+];
+
+function renderEclipses(){
+  var now=new Date();
+  var solarEl=document.getElementById('solar-eclipses');
+  var lunarEl=document.getElementById('lunar-eclipses');
+  if(!solarEl||!lunarEl) return;
+  function daysUntil(ds){return Math.ceil((new Date(ds+'T12:00:00Z')-now)/86400000);}
+  function fmtD(ds){var p=ds.split('-');var m=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];return parseInt(p[2])+' '+m[parseInt(p[1])-1]+' '+p[0];}
+  function card(e,isLunar){
+    var days=daysUntil(e.date);
+    var isPeru=e.region.indexOf('Perú')>=0||e.region.indexOf('América')>=0;
+    var col=e.type==='Total'?'#e06868':e.type==='Anular'?'#e09828':(isLunar?'#a0b8e0':'#505070');
+    var bg=e.type==='Total'?'rgba(224,104,104,.1)':e.type==='Anular'?'rgba(224,152,40,.08)':'rgba(80,80,112,.06)';
+    var accent=isLunar?'#a0b8e0':'var(--gold)';
+    return '<div style="background:#0d0d1c;border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:11px 13px;margin-bottom:7px'+(isPeru?';border-left:2px solid '+accent:'')+'">'
+      +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">'
+      +'<span style="font-size:.55rem;padding:2px 7px;border-radius:4px;background:'+bg+';color:'+col+';font-family:monospace;font-weight:600">'+e.type.toUpperCase()+'</span>'
+      +'<span style="font-size:.72rem;color:#c0c0e0;font-weight:500;flex:1">'+fmtD(e.date)+'</span>'
+      +'<span style="font-family:monospace;font-size:.55rem;color:'+(days<90?accent:'#383858')+'">'+days+' días</span></div>'
+      +'<div style="font-size:.62rem;color:#606080;line-height:1.45">🌍 '+e.region+(e.dur?' · ⏱ '+e.dur:'')+'</div>'
+      +(e.tip?'<div style="font-size:.59rem;color:#505070;margin-top:3px;font-style:italic">💡 '+e.tip+'</div>':'')
+      +(isPeru?'<div style="font-size:.54rem;color:'+accent+';margin-top:4px;font-family:monospace">🇵🇪 VISIBLE DESDE PERÚ</div>':'')
+      +'</div>';
+  }
+  solarEl.innerHTML=SOLAR_ECLIPSES.filter(function(e){return daysUntil(e.date)>-1;}).slice(0,4).map(function(e){return card(e,false);}).join('');
+  lunarEl.innerHTML=LUNAR_ECLIPSES.filter(function(e){return daysUntil(e.date)>-1;}).slice(0,4).map(function(e){return card(e,true);}).join('');
 }
 
 // ═══════════════════════════════════════
@@ -4622,96 +4734,6 @@ function renderSpecialConditions(data){
 
 // Sync WX_DEST when loadAll is called
 // ═══════════════════════════════════════
-// ── ECLIPSE DATA 2025–2030 ──
-// ═══════════════════════════════════════
-var SOLAR_ECLIPSES=[
-  {date:'2025-03-29',type:'Parcial',region:'Europa, N. África, Rusia',maxMag:'0.94',tip:'Visible parcialmente desde España y norte de África'},
-  {date:'2025-09-21',type:'Parcial',region:'Pacífico Sur, Antártida, N. Zelanda',maxMag:'0.86',tip:'Solo visible desde el hemisferio sur'},
-  {date:'2026-02-17',type:'Anular',region:'Antártida, S. Argentina, S. Chile',maxMag:'0.96',tip:'El anillo de fuego cruza la Patagonia — oportunidad fotográfica única'},
-  {date:'2026-08-12',type:'Total',region:'Ártico, España, Islandia, Groenlandia',maxMag:'1.04',tip:'Eclipse total visible desde España e Islandia — planifica con anticipación'},
-  {date:'2027-02-06',type:'Anular',region:'S. América, Antártida, África',maxMag:'0.93',tip:'Visible como parcial desde Perú y Chile'},
-  {date:'2027-08-02',type:'Total',region:'N. África, Medio Oriente, España',maxMag:'1.08',tip:'Totalidad en Gibraltar, Egipto y Arabia — duración excepcional de 6 min 23 s'},
-  {date:'2028-01-26',type:'Anular',region:'Pacífico, Perú, Ecuador, Colombia',maxMag:'0.92',tip:'ANULARIDAD CRUZA PERÚ — el anillo de fuego será visible desde Lima y la sierra'},
-  {date:'2028-07-22',type:'Total',region:'Australia, N. Zelanda, Pacífico Sur',maxMag:'1.06',tip:'Totalidad cruza Australia — buen complemento con el Outback'},
-  {date:'2029-01-14',type:'Parcial',region:'N. América, Centroamérica',maxMag:'0.87',tip:'Parcial visible desde Guatemala y México'},
-  {date:'2029-06-12',type:'Parcial',region:'Ártico, Escandinavia',maxMag:'0.46',tip:'Solo visible desde altas latitudes'},
-  {date:'2029-07-11',type:'Parcial',region:'S. América (sur)',maxMag:'0.34',tip:'Visible parcialmente desde Argentina y Chile'},
-  {date:'2029-12-05',type:'Parcial',region:'Antártida, S. América austral',maxMag:'0.88',tip:'Visible desde el extremo sur de Chile y Argentina'},
-  {date:'2030-06-01',type:'Anular',region:'N. África, Europa del Este, Asia',maxMag:'0.94',tip:'Anularidad cruza el Mediterráneo oriental'},
-  {date:'2030-11-25',type:'Total',region:'S. África, Océano Índico, Australia',maxMag:'1.05',tip:'Totalidad en Sudáfrica y Botswana — combina con safari fotográfico'},
-];
-var LUNAR_ECLIPSES=[
-  {date:'2025-03-14',type:'Total',region:'América, Europa, África',dur:'3h 38m',tip:'Luna de sangre visible desde toda América y Europa — la mejor del año'},
-  {date:'2025-09-07',type:'Total',region:'Europa, Asia, África, Australia',dur:'3h 29m',tip:'Visible completo desde Europa y África; parcial desde el este de Sudamérica'},
-  {date:'2026-03-03',type:'Total',region:'América, Europa, E. Asia',dur:'3h 27m',tip:'Excelente desde Perú — luna de sangre visible desde la puesta de luna'},
-  {date:'2026-08-28',type:'Parcial',region:'América, Europa, África',dur:'1h 52m',tip:'Parcial grande (91%) — visible desde todo Perú'},
-  {date:'2028-01-12',type:'Parcial',region:'América, Europa, África',dur:'0h 56m',tip:'Eclipse parcial menor visible desde Sudamérica'},
-  {date:'2028-07-06',type:'Parcial',region:'América, Pacífico, E. Asia',dur:'1h 32m',tip:'Visible desde Perú al amanecer'},
-  {date:'2028-12-31',type:'Total',region:'Europa, Asia, África, Australia',dur:'3h 18m',tip:'Luna de sangre de Año Nuevo — única combinación de eclipse con celebración'},
-  {date:'2029-06-26',type:'Total',region:'América, Europa, África',dur:'3h 40m',tip:'Excelente desde Perú — eclipse total con buena duración de totalidad'},
-  {date:'2029-12-20',type:'Total',region:'América, Europa, E. Asia',dur:'3h 34m',tip:'Eclipse total navideño — visible desde toda América'},
-  {date:'2030-06-15',type:'Parcial',region:'América, Europa, África',dur:'2h 24m',tip:'Eclipse parcial profundo visible desde Perú'},
-];
-
-function renderEclipses(){
-  var now=new Date();
-  var solarEl=document.getElementById('solar-eclipses');
-  var lunarEl=document.getElementById('lunar-eclipses');
-  if(!solarEl||!lunarEl) return;
-
-  function daysUntil(dateStr){
-    var d=new Date(dateStr+'T12:00:00Z');
-    return Math.ceil((d-now)/86400000);
-  }
-  function formatDate(dateStr){
-    var parts=dateStr.split('-');
-    var months=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-    return parseInt(parts[2])+' '+months[parseInt(parts[1])-1]+' '+parts[0];
-  }
-
-  // Solar eclipses — next 4
-  var futureSolar=SOLAR_ECLIPSES.filter(function(e){return daysUntil(e.date)>-1;}).slice(0,4);
-  solarEl.innerHTML=futureSolar.map(function(e){
-    var days=daysUntil(e.date);
-    var isPeru=e.region.indexOf('Perú')>=0||e.region.indexOf('S. América')>=0||e.region.indexOf('América')>=0;
-    var typeColor=e.type==='Total'?'#e06868':e.type==='Anular'?'#e09828':'#505070';
-    var typeBg=e.type==='Total'?'rgba(224,104,104,.1)':e.type==='Anular'?'rgba(224,152,40,.08)':'rgba(80,80,112,.06)';
-    return '<div style="background:#0d0d1c;border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:11px 13px;margin-bottom:7px'+(isPeru?';border-left:2px solid var(--gold)':'')+'">'
-      +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">'
-      +'<span style="font-size:.55rem;padding:2px 7px;border-radius:4px;background:'+typeBg+';color:'+typeColor+';font-family:monospace;font-weight:600">'+e.type.toUpperCase()+'</span>'
-      +'<span style="font-size:.72rem;color:#c0c0e0;font-weight:500;flex:1">'+formatDate(e.date)+'</span>'
-      +'<span style="font-family:monospace;font-size:.55rem;color:'+(days<90?'var(--gold)':'#383858')+'">'+days+' días</span>'
-      +'</div>'
-      +'<div style="font-size:.64rem;color:#606080;line-height:1.45">🌍 '+e.region+'</div>'
-      +(e.tip?'<div style="font-size:.6rem;color:#505070;margin-top:3px;font-style:italic">💡 '+e.tip+'</div>':'')
-      +(isPeru?'<div style="font-size:.55rem;color:var(--gold);margin-top:4px;font-family:monospace">🇵🇪 VISIBLE DESDE PERÚ</div>':'')
-      +'</div>';
-  }).join('');
-
-  // Lunar eclipses — next 4
-  var futureLunar=LUNAR_ECLIPSES.filter(function(e){return daysUntil(e.date)>-1;}).slice(0,4);
-  lunarEl.innerHTML=futureLunar.map(function(e){
-    var days=daysUntil(e.date);
-    var isPeru=e.region.indexOf('Perú')>=0||e.region.indexOf('América')>=0;
-    var typeColor=e.type==='Total'?'#e06868':'#a0b8e0';
-    var typeBg=e.type==='Total'?'rgba(224,104,104,.1)':'rgba(160,184,224,.08)';
-    return '<div style="background:#0d0d1c;border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:11px 13px;margin-bottom:7px'+(isPeru?';border-left:2px solid #a0b8e0':'')+'">'
-      +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">'
-      +'<span style="font-size:.55rem;padding:2px 7px;border-radius:4px;background:'+typeBg+';color:'+typeColor+';font-family:monospace;font-weight:600">'+e.type.toUpperCase()+'</span>'
-      +'<span style="font-size:.72rem;color:#c0c0e0;font-weight:500;flex:1">'+formatDate(e.date)+'</span>'
-      +'<span style="font-family:monospace;font-size:.55rem;color:'+(days<90?'#a0b8e0':'#383858')+'">'+days+' días</span>'
-      +'</div>'
-      +'<div style="display:flex;gap:12px;font-size:.62rem;color:#606080">'
-      +'<span>🌍 '+e.region+'</span>'
-      +(e.dur?'<span>⏱ '+e.dur+'</span>':'')
-      +'</div>'
-      +(e.tip?'<div style="font-size:.6rem;color:#505070;margin-top:3px;font-style:italic">💡 '+e.tip+'</div>':'')
-      +(isPeru?'<div style="font-size:.55rem;color:#a0b8e0;margin-top:4px;font-family:monospace">🇵🇪 VISIBLE DESDE PERÚ</div>':'')
-      +'</div>';
-  }).join('');
-}
-
-// ═══════════════════════════════════════
 // ── EPHEMERIS CALENDAR ──
 // ═══════════════════════════════════════
 let ephem_day=0; // offset from today
@@ -5667,6 +5689,15 @@ function filterGear(cat,el){
 }
 
 // ── OPEN / CLOSE SHEET ──
+// Quick-add: open the gear sheet with a category preselected
+function quickAddGear(cat){
+  openGearSheet();
+  var catEl=document.getElementById('gs-cat');
+  if(catEl) catEl.value=cat;
+  var nameEl=document.getElementById('gs-name');
+  if(nameEl) setTimeout(function(){nameEl.focus();},200);
+}
+
 function openGearSheet(prefillId){
   editingGearId=prefillId||null;
   gearPhotoData='';gearReceiptData='';
