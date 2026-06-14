@@ -1203,10 +1203,10 @@ svg.ring-svg{width:56px;height:56px}
     <!-- ══ VIEW 2: CHECKLIST ══ -->
     <div class="view" id="v-checklist">
       <div class="ck-header">
-        <div class="sec-title" style="padding-bottom:11px">Mi Equipamiento</div>
-        <div class="trip-sel">
-          <div class="trip-ic">🦜</div>
-          <div class="trip-inf"><div class="trip-nm">Tambopata · Amazonia</div><div class="trip-mt">📅 15–22 Agosto 2025 · 8 días</div></div>
+        <div class="sec-title" style="padding-bottom:11px">Equipo Recomendado</div>
+        <div class="trip-sel" onclick="switchTab('discover')">
+          <div class="trip-ic" id="ck-dest-ic">📍</div>
+          <div class="trip-inf"><div class="trip-nm" id="ck-dest-nm">Detectando…</div><div class="trip-mt" id="ck-dest-mt">Toca para cambiar de destino</div></div>
           <div class="trip-chev">▼</div>
         </div>
       </div>
@@ -1215,52 +1215,21 @@ svg.ring-svg{width:56px;height:56px}
           <defs><linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#38c8b8"/><stop offset="100%" style="stop-color:#c8a050"/></linearGradient></defs>
           <circle class="r-bg" cx="30" cy="30" r="26"/>
           <circle class="r-fill" id="r-fill" cx="30" cy="30" r="26"/>
-          <text class="r-txt" x="30" y="30" id="r-pct">69%</text>
+          <text class="r-txt" x="30" y="30" id="r-pct">0%</text>
         </svg>
         <div class="ps">
-          <div class="ps-row"><span class="ps-lbl">Esenciales</span><span class="ps-val" id="ess-v">12 / 14 ✓</span></div>
-          <div class="ps-bar"><div class="ps-fill" style="width:86%"></div></div>
-          <div class="ps-row" style="margin-top:6px"><span class="ps-lbl">Recomendados</span><span class="ps-val">8 / 12</span></div>
-          <div class="ps-bar"><div class="ps-fill" style="width:67%;background:linear-gradient(90deg,var(--violet),var(--gold))"></div></div>
+          <div class="ps-row"><span class="ps-lbl">Empacado</span><span class="ps-val" id="ess-v">0 / 0 ✓</span></div>
+          <div class="ps-bar"><div class="ps-fill" id="ck-ess-bar" style="width:0%"></div></div>
+          <div class="ps-row" style="margin-top:6px"><span class="ps-lbl">Mi equipo registrado</span><span class="ps-val" id="ck-gear-count">0 ítems</span></div>
+          <div class="ps-bar"><div class="ps-fill" id="ck-gear-bar" style="width:0%;background:linear-gradient(90deg,var(--violet),var(--gold))"></div></div>
         </div>
       </div>
       <div class="ai-sug" onclick="switchTab('ai')">
         <div class="as-sp">✨</div>
-        <div class="as-t"><div class="as-title">Sugerencias IA para Tambopata</div><div class="as-sub">3 ítems que podrías estar olvidando</div></div>
+        <div class="as-t"><div class="as-title" id="ck-ai-title">Sugerencias IA</div><div class="as-sub">Toca para generar ajustes de cámara con IA</div></div>
         <div class="as-arr">→</div>
       </div>
-      <div class="ck-cat">
-        <div class="ck-cat-hd" onclick="toggleCat('ck-cam')"><span class="ck-cat-ic">📷</span><span class="ck-cat-nm">Cuerpos de Cámara</span><span class="ck-cat-ct">4/5</span></div>
-        <div class="ck-items" id="ck-cam">
-          <div class="ck-item done" onclick="toggleItem(this)"><div class="ck-box">✓</div><div class="ck-item-t"><div class="ck-item-nm">Sony A7 IV (principal)</div></div><span class="ck-pri pri-e">ESENCIAL</span></div>
-          <div class="ck-item done" onclick="toggleItem(this)"><div class="ck-box">✓</div><div class="ck-item-t"><div class="ck-item-nm">Body backup Sony A6600</div></div><span class="ck-pri pri-e">ESENCIAL</span></div>
-          <div class="ck-item done" onclick="toggleItem(this)"><div class="ck-box">✓</div><div class="ck-item-t"><div class="ck-item-nm">Baterías extra × 4</div><div class="ck-item-note">El calor reduce autonomía</div></div><span class="ck-pri pri-e">ESENCIAL</span></div>
-          <div class="ck-item done" onclick="toggleItem(this)"><div class="ck-box">✓</div><div class="ck-item-t"><div class="ck-item-nm">Cargador + adaptador</div></div><span class="ck-pri pri-e">ESENCIAL</span></div>
-          <div class="ck-item" onclick="toggleItem(this)"><div class="ck-box"></div><div class="ck-item-t"><div class="ck-item-nm">Cargador solar portátil</div><div class="ck-item-note">Para rutas sin electricidad</div></div><span class="ck-pri pri-r">RECOM.</span></div>
-        </div>
-      </div>
-      <div class="ck-cat">
-        <div class="ck-cat-hd" onclick="toggleCat('ck-prot')"><span class="ck-cat-ic">🛡️</span><span class="ck-cat-nm">Protección Lluvia/Humedad</span><span class="ck-cat-ct">5/7</span></div>
-        <div class="ck-items" id="ck-prot">
-          <div class="ck-item done" onclick="toggleItem(this)"><div class="ck-box">✓</div><div class="ck-item-t"><div class="ck-item-nm">Rain cover × 2</div></div><span class="ck-pri pri-e">ESENCIAL</span></div>
-          <div class="ck-item done" onclick="toggleItem(this)"><div class="ck-box">✓</div><div class="ck-item-t"><div class="ck-item-nm">Dry bag 20L</div></div><span class="ck-pri pri-e">ESENCIAL</span></div>
-          <div class="ck-item done" onclick="toggleItem(this)"><div class="ck-box">✓</div><div class="ck-item-t"><div class="ck-item-nm">Sílica gel × 20 paquetes</div></div><span class="ck-pri pri-e">ESENCIAL</span></div>
-          <div class="ck-item done" onclick="toggleItem(this)"><div class="ck-box">✓</div><div class="ck-item-t"><div class="ck-item-nm">Bolsas Ziploc × 10+</div></div><span class="ck-pri pri-e">ESENCIAL</span></div>
-          <div class="ck-item done" onclick="toggleItem(this)"><div class="ck-box">✓</div><div class="ck-item-t"><div class="ck-item-nm">Paños microfibra × 6</div></div><span class="ck-pri pri-e">ESENCIAL</span></div>
-          <div class="ck-item" onclick="toggleItem(this)"><div class="ck-box"></div><div class="ck-item-t"><div class="ck-item-nm">Caja estanca Pelican</div></div><span class="ck-pri pri-r">RECOM.</span></div>
-          <div class="ck-item" onclick="toggleItem(this)"><div class="ck-box"></div><div class="ck-item-t"><div class="ck-item-nm">Lápiz limpiador sensor</div></div><span class="ck-pri pri-r">RECOM.</span></div>
-        </div>
-      </div>
-      <div class="ck-cat">
-        <div class="ck-cat-hd" onclick="toggleCat('ck-opt')"><span class="ck-cat-ic">🔭</span><span class="ck-cat-nm">Óptica</span><span class="ck-cat-ct">3/5</span></div>
-        <div class="ck-items" id="ck-opt">
-          <div class="ck-item done" onclick="toggleItem(this)"><div class="ck-box">✓</div><div class="ck-item-t"><div class="ck-item-nm">Tele 200–600mm G</div></div><span class="ck-pri pri-e">ESENCIAL</span></div>
-          <div class="ck-item done" onclick="toggleItem(this)"><div class="ck-box">✓</div><div class="ck-item-t"><div class="ck-item-nm">Macro 90mm f/2.8</div></div><span class="ck-pri pri-r">RECOM.</span></div>
-          <div class="ck-item done" onclick="toggleItem(this)"><div class="ck-box">✓</div><div class="ck-item-t"><div class="ck-item-nm">Gran angular 16–35mm</div></div><span class="ck-pri pri-r">RECOM.</span></div>
-          <div class="ck-item" onclick="toggleItem(this)"><div class="ck-box"></div><div class="ck-item-t"><div class="ck-item-nm">Filtro polarizador CPL</div></div><span class="ck-pri pri-r">RECOM.</span></div>
-          <div class="ck-item" onclick="toggleItem(this)"><div class="ck-box"></div><div class="ck-item-t"><div class="ck-item-nm">Filtro ND variable</div></div><span class="ck-pri pri-o">OPC.</span></div>
-        </div>
-      </div>
+      <div id="ck-dynamic"></div>
     </div><!-- /v-checklist -->
 
     <!-- ══ VIEW 3: AI ASSISTANT ══ -->
@@ -2352,6 +2321,7 @@ function switchTab(tab){
   const idx=['discover','spots','ai','weather','astro','lens','profile'].indexOf(tab);
   if(idx>=0) document.querySelectorAll('.tab')[idx].classList.add('active');
   if(tab==='spots') renderSpotList();
+  if(tab==='checklist'){try{renderChecklist();}catch(e){}}
   if(tab==='weather'){WX_DEST={lat:CL.lat,lon:CL.lon,name:CL.name,emoji:CL.emoji};loadWeatherPro();}
   if(tab==='astro'){renderEphemeris();renderLightPollution();renderCompass();}
   if(tab==='lens') initLuzTab();
@@ -3221,6 +3191,9 @@ function calcGC(lat,lon){
 // CURRENT LOCATION (default Tambopata)
 // ═══════════════════════════════════════
 let CL={lat:-12.83,lon:-69.27,name:'Tambopata, Perú',emoji:'🦜'};
+let CUR_DEST_ID=null;
+let ckChecked={};
+try{ckChecked=JSON.parse(localStorage.getItem('pe_checklist')||'{}');}catch(_){}
 let WXD=null;
 let SUN_DATA=null,MOON_DATA=null,GC_DATA=null;
 
@@ -3407,9 +3380,10 @@ function setAppLocation(lat,lon,name,emoji){
     ['alb-dest',name],
     ['dm-nm',name],
     ['luz-dest-tag','📍 '+name+' · '+lat.toFixed(2)+'°, '+lon.toFixed(2)+'°'],
+    ['ck-dest-nm',name],
   ];
   L.forEach(function(p){var el=document.getElementById(p[0]);if(el)el.textContent=p[1];});
-  ['wx-dest-em','dm-em'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=emoji||'📍';});
+  ['wx-dest-em','dm-em','ck-dest-ic'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=emoji||'📍';});
   // Splash: mark GPS step as done
   splashStep('ss-gps',0);
   splashStep('ss-ready',300);
@@ -4110,6 +4084,9 @@ function openDet(id){
   document.getElementById('det-overlay').classList.add('open');
   document.getElementById('det-overlay').scrollTop=0;
   setAppLocation(d.lat,d.lon,d.nm,d.e);
+  CUR_DEST_ID=d.id;
+  try{localStorage.setItem('pe_cur_dest',String(d.id));}catch(_){}
+  try{renderChecklist();}catch(e){}
 }
 
 function closeDet(){document.getElementById('det-overlay').classList.remove('open');}
@@ -4122,6 +4099,97 @@ function filterRegion(){}
 // ═══════════════════════════════════════
 // CHECKLIST
 // ═══════════════════════════════════════
+function renderChecklist(){
+  // Resolve the current destination (selected) or fall back to nearest by CL
+  var dest=null;
+  if(CUR_DEST_ID!=null){
+    dest=DETS.find(function(d){return d.id===CUR_DEST_ID;});
+  }
+  if(!dest){
+    // Find destination closest to current location
+    var best=null,bestDist=1e9;
+    DETS.forEach(function(d){
+      var dist=Math.abs(d.lat-CL.lat)+Math.abs(d.lon-CL.lon);
+      if(dist<bestDist){bestDist=dist;best=d;}
+    });
+    dest=best;
+  }
+  if(!dest) return;
+
+  // Update header labels
+  var nm=document.getElementById('ck-dest-nm');
+  var ic=document.getElementById('ck-dest-ic');
+  var mt=document.getElementById('ck-dest-mt');
+  if(nm) nm.textContent=dest.nm;
+  if(ic) ic.textContent=dest.e||'📍';
+  if(mt) mt.textContent=dest.loc||'Toca para cambiar de destino';
+
+  // Update AI title
+  var aiT=document.getElementById('ck-ai-title');
+  if(aiT) aiT.textContent='Sugerencias IA para '+dest.nm;
+
+  // Build the gear checklist from this destination's recommended gear
+  var gear=dest.gear||[];
+  var saved={};
+  try{saved=JSON.parse(localStorage.getItem('pe_checklist_'+dest.id)||'{}');}catch(_){}
+
+  var myGear=getGearItems();
+
+  var container=document.getElementById('ck-dynamic');
+  if(!container) return;
+
+  var html='<div style="padding:0 16px">';
+  html+='<div style="font-family:\'JetBrains Mono\',monospace;font-size:.5rem;letter-spacing:.13em;color:#383858;text-transform:uppercase;margin:14px 0 8px">🎒 Equipo recomendado para '+dest.nm+'</div>';
+
+  gear.forEach(function(g,i){
+    var key='g'+i;
+    var done=!!saved[key];
+    // Check if user owns something matching this gear (by keyword)
+    var owned=myGear.some(function(item){
+      var gLow=g.toLowerCase();
+      var nameLow=(item.name||'').toLowerCase();
+      var modelLow=(item.model||'').toLowerCase();
+      // Match by first significant word
+      var firstWord=gLow.split(/[\s\d]/)[0];
+      return firstWord.length>3&&(nameLow.indexOf(firstWord)>=0||modelLow.indexOf(firstWord)>=0);
+    });
+    html+='<div class="ck-item'+(done?' done':'')+'" onclick="toggleCkItem(\''+dest.id+'\',\''+key+'\',this)" style="display:flex;align-items:center;gap:11px;padding:11px 13px;background:#0d0d1c;border:1px solid rgba(255,255,255,.06);border-radius:10px;margin-bottom:6px;cursor:pointer">'
+      +'<div class="ck-box" style="width:20px;height:20px;border-radius:6px;border:1.5px solid rgba(255,255,255,.2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.7rem;color:var(--green)">'+(done?'✓':'')+'</div>'
+      +'<div style="flex:1;font-size:.78rem;color:#c0c0e0"'+(done?' style="opacity:.5;text-decoration:line-through"':'')+'>'+g+'</div>'
+      +(owned?'<span style="font-size:.52rem;font-family:monospace;color:var(--green);background:rgba(88,204,114,.1);padding:2px 7px;border-radius:4px;white-space:nowrap">✓ LO TENGO</span>':'<span style="font-size:.52rem;font-family:monospace;color:#383858;background:rgba(255,255,255,.03);padding:2px 7px;border-radius:4px;white-space:nowrap">no registrado</span>')
+      +'</div>';
+  });
+  html+='</div>';
+  container.innerHTML=html;
+
+  // Update progress
+  var total=gear.length;
+  var done=gear.filter(function(g,i){return saved['g'+i];}).length;
+  var pct=total>0?Math.round(done/total*100):0;
+  var rfill=document.getElementById('r-fill');
+  if(rfill) rfill.style.strokeDashoffset=163*(1-pct/100);
+  var rpct=document.getElementById('r-pct');
+  if(rpct) rpct.textContent=pct+'%';
+  var essv=document.getElementById('ess-v');
+  if(essv) essv.textContent=done+' / '+total+' ✓';
+  var essbar=document.getElementById('ck-ess-bar');
+  if(essbar) essbar.style.width=pct+'%';
+
+  // My gear count
+  var gc=document.getElementById('ck-gear-count');
+  if(gc) gc.textContent=myGear.length+' ítems';
+  var gbar=document.getElementById('ck-gear-bar');
+  if(gbar) gbar.style.width=Math.min(100,myGear.length*10)+'%';
+}
+
+function toggleCkItem(destId,key,el){
+  var saved={};
+  try{saved=JSON.parse(localStorage.getItem('pe_checklist_'+destId)||'{}');}catch(_){}
+  saved[key]=!saved[key];
+  try{localStorage.setItem('pe_checklist_'+destId,JSON.stringify(saved));}catch(_){}
+  renderChecklist();
+}
+
 function toggleItem(el){
   el.classList.toggle('done');
   el.querySelector('.ck-box').textContent=el.classList.contains('done')?'✓':'';
@@ -4130,10 +4198,11 @@ function toggleItem(el){
 function toggleCat(id){const el=document.getElementById(id);el.style.display=el.style.display==='none'?'':'none';}
 function updateProg(){
   const items=document.querySelectorAll('#v-checklist .ck-item');
+  if(!items.length) return;
   const done=[...items].filter(i=>i.classList.contains('done')).length;
   const pct=Math.round(done/items.length*100);
-  document.getElementById('r-fill').style.strokeDashoffset=163*(1-pct/100);
-  document.getElementById('r-pct').textContent=pct+'%';
+  var rf=document.getElementById('r-fill');if(rf)rf.style.strokeDashoffset=163*(1-pct/100);
+  var rp=document.getElementById('r-pct');if(rp)rp.textContent=pct+'%';
 }
 
 // ═══════════════════════════════════════
